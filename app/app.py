@@ -37,7 +37,21 @@ class HeroesId(Resource):
         hero = Hero.query.filter(Hero.id == id).first()
         
         if hero:
-            hero_dict = hero.to_dict()
+            hero_dict = {
+                "id": hero.id,
+                "name": hero.name,
+                "super_name": hero.super_name,
+                "powers": []
+            }
+
+            for hero_power in hero.hero_power:
+                power_dict = {
+                    "id": hero_power.power.id,
+                    "name": hero_power.power.name,
+                    "description": hero_power.power.description
+                }
+                hero_dict["powers"].append(power_dict)
+
             return make_response(jsonify(hero_dict), 200)
         else:
             return make_response(jsonify({"error": "Hero not found"}), 404)
@@ -62,8 +76,12 @@ class PowersId(Resource):
         power =  Power.query.filter(Power.id == id).first()
         
         if power:
-            # power_dict = power.to_dict()
-            return make_response(jsonify(power), 200)
+            power_dict = {
+                "id": power.id, 
+                "name": power.name, 
+                "description": power.description 
+            }
+            return make_response(jsonify(power_dict), 200)
         else:
             return make_response(jsonify({"error": "Power not found"}), 404)
     
