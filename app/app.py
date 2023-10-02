@@ -86,14 +86,24 @@ class PowersId(Resource):
             return make_response(jsonify({"error": "Power not found"}), 404)
     
     def patch(self, id):
-        power =  Power.query.filter(Power.id == id).first()
-        for attr in request.form:
-            setattr(power, attr, request.form.get(attr))
-            
-        db.session.add(power)
-        db.session.commit()
         
-        return make_response(jsonify(power), 200)
+        try:
+            power =  Power.query.filter(Power.id == id).first()
+            for attr in request.form:
+                setattr(power, attr, request.form.get(attr))
+                
+            db.session.add(power)
+            db.session.commit()
+            
+            power_dict = {
+                "id": power.id, 
+                "name": power.name, 
+                "description": power.description 
+            }
+            
+            return make_response(jsonify(power_dict), 200)
+        except ValueError as e:
+            return make_response({"error": e.args}, 200)
 
 class HeroPower(Resource):
     
